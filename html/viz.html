@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>CEI Visualization</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!--Load jQuery-->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet"/>
+
+<!-- SEARCH CONTROL -->
+<link rel="stylesheet" href="../src/leaflet-search.css"/>
+
+<!-- Chart.js -->	
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.4.0/dist/chart.min.js"></script>
+	
+	<link rel="stylesheet" href="../leaflet/leaflet.css"/>
+	<script src="../leaflet/leaflet.js"></script> 
+	<script src="../js/l.control.geosearch.js"></script>
+	<script src="../js/l.geosearch.provider.google.js"></script>
+    <link rel="stylesheet" href="../css/l.geosearch.css"/>
+	
+<!-- Main Style -->
+    <link rel="stylesheet" href="../css/viz.css"/>
+
+<!-- Geojson -->
+	<script type="text/javascript" src="../geojson/proj_map_0526.geojson"></script>
+
+</head>
+<body>
+
+	<!-- Map-->	
+	<div class="map" id="map">
+	</div>
+
+	<div class="legendmap" id="legendmap">
+		<ul class="legend" id="script_legend">
+			<li><span class="ResidencyB"></span>Residency B</li>
+			<li><span class="ResidencyC"></span>Residency C</li>
+			<li><span class="ResidencyE"></span>Residency E</li>
+		</ul>
+	</div>	
+
+
+	<!-- Tabs for Data Charts and Tables-->
+	<div class="title">
+		<h3><span style="color: #c93434">Threats</span><span style="color: rgb(85, 82, 82)"> vs. </span><span style="color: #0b5eac">Opportunities</span></h3>
+	</div>
+
+	<div class="container">
+		<ul class="nav nav-pills" id="pills-tab" role="tablist">
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" disabled="disabled" id="pills-res-tab" data-bs-toggle="pill" type="button" role="tab" aria-controls="pills-home" aria-selected="true" style="font-weight: bold"></button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" disabled="disabled" id="pills-res-tab" data-bs-toggle="pill" type="button" role="tab" aria-controls="pills-home" aria-selected="true" style="font-weight: bold"></button>
+			</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link active" id="pills-res-tab" data-bs-toggle="pill" data-bs-target="#residency-b" type="button" role="tab" aria-controls="pills-home" aria-selected="true" style="font-weight: bold">Residency B</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link" id="pills-nchrp-tab" data-bs-toggle="pill" data-bs-target="#residency-c" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" style="font-weight: bold">Residency C</button>
+		</li>
+		<li class="nav-item" role="presentation">
+			<button class="nav-link" id="pills-nchrp-tab" data-bs-toggle="pill" data-bs-target="#residency-e" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" style="font-weight: bold">Residency E</button>
+		</li>
+    </ul>
+	
+	
+	<div class="tab-content" id="pills-tabContent">
+		
+		<div class="tab-pane fade show active" id="residency-b" role="tabpanel" aria-labelledby="pills-home-tab">
+			<div id="residency_b">
+				<img src="../images/res_b.png">
+			</div>
+		</div>
+		
+		<div class="tab-pane fade" id="residency-c" role="tabpanel" aria-labelledby="pills-profile-tab">	
+			<div id="residency-c">
+				<img src="../images/res_c.png">
+			</div>
+		</div>
+			
+		<div class="tab-pane fade" id="residency-e" role="tabpanel" aria-labelledby="pills-profile-tab">
+			<div id="residency-e">
+				<img src="../images/res_e.png">
+			</div>
+		</div>
+    </div>
+	</div>
+	
+	
+	<!-- Leaflet Search Control -->
+	<script src="../src/leaflet-search.js"></script>
+	
+	<!-- Chart.js -->	
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.4.0/dist/chart.min.js"></script>
+
+	
+	<script type="text/javascript">
+	
+		var map = L.map('map').setView([27.89731745882567, -81.38988803486743], 8);
+
+		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+		}).addTo(map);
+
+		
+		
+		// Update information inside division
+		var info_10 = L.control();
+			
+			info_10.onAdd = function (map) {
+				this._div = L.DomUtil.create('div', 'info');
+				this.update();
+				return this._div;
+			};
+			info_10.update = function (props) {
+				this._div.innerHTML = '<h4 align="center">Project Location</h4>' 
+					+ "Click on location to see details";
+			};
+			info_10.addTo(map);
+			
+		function highlightFeature10(e) {
+			var layer = e.target;
+			layer.setStyle({
+				weight: 5,
+				color: '#666',
+				dashArray: '',
+				fillOpacity: 0.7
+			});
+			info_10.update(layer.feature.properties);
+		}
+	
+		function resetHighlight10(e) {
+			station.resetStyle(e.target);
+			info_10.update();
+		}
+
+		
+		function whenClicked(e) {
+			var clickProperty = e.target.feature.properties;
+			dataRefresh(clickProperty); //update data in the entire panel
+		}
+
+	
+		//on each feature function		
+		function onEachFeature(feature, layer) {
+		    // layer.on({
+			//     mouseover: highlightFeature10,
+			// 	mouseout: resetHighlight10,
+			//     click: whenClicked});
+				
+			// var popupContent = "<p style='line-height: 1.5em'> <i><b>Project:</b></i> " + feature.properties.Project + '<br>' 
+			// 		+'<i><b>Residency:</b></i>&nbsp; '+ feature.properties.Residency + '<br>' 
+			// 		+'<i><b>Duration:</b></i> '+ feature.properties.Duration + '<br>'
+			// 		+'<i><b>Prime or Sub:</b></i>&nbsp;'+ feature.properties.Prime_or_S + '<br>'
+			// 		+'<i><b>Advertised Date:</b></i>&nbsp;'+ feature.properties.Advertise + '<br>'
+			// 		+'<i><b>Begins:</b></i>&nbsp;'+ feature.properties.Begins + "</p>" ;
+
+			// if (feature.properties && feature.properties.popupContent) {
+			// 	popupContent += feature.properties.popupContent;
+			// }
+
+			// layer.bindPopup(popupContent);
+
+			layer.bindPopup("<p style='line-height: 1.5em'> <i><b>Project:</b></i> " + feature.properties.Project + '<br>' 
+					+'<i><b>Residency:</b></i>&nbsp; '+ feature.properties.Residency + '<br>' 
+					+'<i><b>Duration:</b></i> '+ feature.properties.Duration + '<br>'
+					+'<i><b>Net Fee:</b></i> '+ feature.properties.Net_Fee + '<br>'
+					+'<i><b>Prime or Sub:</b></i>&nbsp;'+ feature.properties.Prime_or_S + '<br>'
+					+'<i><b>Monthly Rev:</b></i>&nbsp;'+ feature.properties.Monthly_Re + '<br>'
+					+'<i><b>Advertised Date:</b></i>&nbsp;'+ feature.properties.A_Date + '<br>'
+					+'<i><b>Begins:</b></i>&nbsp;'+ feature.properties.Begins + "</p>");
+  
+		}
+
+		//legend
+		var station = L.geoJson(geo, {
+			style: function (feature) {
+				return feature.properties && feature.properties.style;
+			},
+
+			onEachFeature: onEachFeature,
+
+			pointToLayer: function (feature, latlng) {
+				if(feature.properties.Residency == "B"){
+				    return L.circleMarker(latlng, {
+					radius: 4,
+					fillColor: "#fca311",
+					color: "#000",
+					weight: 1,
+					opacity: 1,
+					fillOpacity: 0.8
+				});
+				}
+				else if(feature.properties.Residency == "C"){
+				    return L.circleMarker(latlng, {
+					radius: 4,
+					fillColor: "#8ac926",
+					color: "#000",
+					weight: 1,
+					opacity: 1,
+					fillOpacity: 0.8
+				});
+				}	else if(feature.properties.Residency == "E"){
+				    return L.circleMarker(latlng, {
+					radius: 4,
+					fillColor: "#0c82d1",
+					color: "#000",
+					weight: 1,
+					opacity: 1,
+					fillOpacity: 0.8
+				});
+				}
+				
+				else{
+					return L.circleMarker(latlng, {
+					radius: 0,
+					fillColor: "#000",
+					color: "#000",
+					weight: 1,
+					opacity: 1,
+					fillOpacity: 0.8
+				});
+				
+				}
+			}
+		}).addTo(map);
+
+	</script>
+
+</body>
+</html>
+
