@@ -55,39 +55,44 @@
 
 	<div class="container">
 		<ul class="nav nav-pills" id="pills-tab" role="tablist">
+
+			<!-- Extra Space-->
 			<li class="nav-item" role="presentation">
-				<button class="nav-link" disabled="disabled" id="pills-res-tab" data-bs-toggle="pill" type="button" role="tab" aria-controls="pills-home" aria-selected="true" style="font-weight: bold"></button>
+				<a class="nav-link" disabled="disabled" type="button" role="tab" style="font-weight: bold"></a>
 			</li>
 			<li class="nav-item" role="presentation">
-				<button class="nav-link" disabled="disabled" id="pills-res-tab" data-bs-toggle="pill" type="button" role="tab" aria-controls="pills-home" aria-selected="true" style="font-weight: bold"></button>
+				<a class="nav-link" disabled="disabled"type="button" role="tab" style="font-weight: bold"></a>
 			</li>
-		<li class="nav-item" role="presentation">
-			<button class="nav-link active" id="pills-res-tab" data-bs-toggle="pill" data-bs-target="#residency-b" type="button" role="tab" aria-controls="pills-home" aria-selected="true" style="font-weight: bold">Residency B</button>
-		</li>
-		<li class="nav-item" role="presentation">
-			<button class="nav-link" id="pills-nchrp-tab" data-bs-toggle="pill" data-bs-target="#residency-c" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" style="font-weight: bold">Residency C</button>
-		</li>
-		<li class="nav-item" role="presentation">
-			<button class="nav-link" id="pills-nchrp-tab" data-bs-toggle="pill" data-bs-target="#residency-e" type="button" role="tab" aria-controls="pills-profile" aria-selected="false" style="font-weight: bold">Residency E</button>
-		</li>
-    </ul>
+			<!-- Extra Space-->
+
+			<li class="nav-item" role="presentation">
+				<a class="nav-link active" id="pills-res-tab" href="#residency-b" data-bs-toggle="pill" data-bs-target="#residency-b" type="button" role="tab" aria-controls="residency-b" aria-selected="false" style="font-weight: bold">Residency B</a>
+			</li>
+			<li class="nav-item" role="presentation">
+				<a class="nav-link" id="pills-res-tab" href="#residency-c" data-bs-toggle="pill" data-bs-target="#residency-c" type="button" role="tab" aria-controls="residency-c" aria-selected="false" style="font-weight: bold">Residency C</a>
+			</li>
+			<li class="nav-item" role="presentation">
+				<a class="nav-link" id="pills-res-tab" href="#residency-e" data-bs-toggle="pill" data-bs-target="#residency-e" type="button" role="tab" aria-controls="residency-e" aria-selected="false" style="font-weight: bold">Residency E</a>
+			</li>
+
+    	</ul>
 	
 	
 	<div class="tab-content" id="pills-tabContent">
 		
-		<div class="tab-pane fade show active" id="residency-b" role="tabpanel" aria-labelledby="pills-home-tab">
+		<div class="tab-pane fade show active" id="residency-b" role="tabpanel" aria-labelledby="residency-b">
 			<div id="residency_b">
 				<img src="../images/res_b.png">
 			</div>
 		</div>
 		
-		<div class="tab-pane fade" id="residency-c" role="tabpanel" aria-labelledby="pills-profile-tab">	
+		<div class="tab-pane fade" id="residency-c" role="tabpanel" aria-labelledby="residency-c">	
 			<div id="residency-c">
 				<img src="../images/res_c.png">
 			</div>
 		</div>
 			
-		<div class="tab-pane fade" id="residency-e" role="tabpanel" aria-labelledby="pills-profile-tab">
+		<div class="tab-pane fade" id="residency-e" role="tabpanel" aria-labelledby="residency-e">
 			<div id="residency-e">
 				<img src="../images/res_e.png">
 			</div>
@@ -143,33 +148,11 @@
 			info_10.update();
 		}
 
-		
-		function whenClicked(e) {
-			var clickProperty = e.target.feature.properties;
-			dataRefresh(clickProperty); //update data in the entire panel
-		}
 
-	
 		//on each feature function		
 		function onEachFeature(feature, layer) {
-		    // layer.on({
-			//     mouseover: highlightFeature10,
-			// 	mouseout: resetHighlight10,
-			//     click: whenClicked});
-				
-			// var popupContent = "<p style='line-height: 1.5em'> <i><b>Project:</b></i> " + feature.properties.Project + '<br>' 
-			// 		+'<i><b>Residency:</b></i>&nbsp; '+ feature.properties.Residency + '<br>' 
-			// 		+'<i><b>Duration:</b></i> '+ feature.properties.Duration + '<br>'
-			// 		+'<i><b>Prime or Sub:</b></i>&nbsp;'+ feature.properties.Prime_or_S + '<br>'
-			// 		+'<i><b>Advertised Date:</b></i>&nbsp;'+ feature.properties.Advertise + '<br>'
-			// 		+'<i><b>Begins:</b></i>&nbsp;'+ feature.properties.Begins + "</p>" ;
-
-			// if (feature.properties && feature.properties.popupContent) {
-			// 	popupContent += feature.properties.popupContent;
-			// }
-
-			// layer.bindPopup(popupContent);
-
+			
+			//popup text
 			layer.bindPopup("<p style='line-height: 1.5em'> <i><b>Project:</b></i> " + feature.properties.Project + '<br>' 
 					+'<i><b>Residency:</b></i>&nbsp; '+ feature.properties.Residency + '<br>' 
 					+'<i><b>Duration:</b></i> '+ feature.properties.Duration + '<br>'
@@ -178,8 +161,30 @@
 					+'<i><b>Monthly Rev:</b></i>&nbsp;'+ feature.properties.Monthly_Re + '<br>'
 					+'<i><b>Advertised Date:</b></i>&nbsp;'+ feature.properties.A_Date + '<br>'
 					+'<i><b>Begins:</b></i>&nbsp;'+ feature.properties.Begins + "</p>");
-  
+
+			// //zoom in when click on marker
+			// layer.on('click', function(e) {
+			// 	map.setView(e.latlng, 8)
+			// });
+
+			//change tab to corresponding residency
+			layer.on('click', function(e) {
+				if(feature.properties.Residency == "B"){
+					//change tab to Residency B
+					return $('#pills-tab a[href="#residency-b"]').tab("show");
+				}
+				else if(feature.properties.Residency == "C"){
+					//change tab to Residency C
+					return $('#pills-tab a[href="#residency-c"]').tab("show");
+				}
+				else if(feature.properties.Residency == "E"){
+					//change tab to Residency E
+					return $('#pills-tab a[href="#residency-e"]').tab("show");
+				}
+			});
+
 		}
+
 
 		//legend
 		var station = L.geoJson(geo, {
@@ -192,7 +197,7 @@
 			pointToLayer: function (feature, latlng) {
 				if(feature.properties.Residency == "B"){
 				    return L.circleMarker(latlng, {
-					radius: 4,
+					radius: 7,
 					fillColor: "#fca311",
 					color: "#000",
 					weight: 1,
@@ -202,16 +207,17 @@
 				}
 				else if(feature.properties.Residency == "C"){
 				    return L.circleMarker(latlng, {
-					radius: 4,
+					radius: 7,
 					fillColor: "#8ac926",
 					color: "#000",
 					weight: 1,
 					opacity: 1,
 					fillOpacity: 0.8
 				});
-				}	else if(feature.properties.Residency == "E"){
+				}	
+				else if(feature.properties.Residency == "E"){
 				    return L.circleMarker(latlng, {
-					radius: 4,
+					radius: 7,
 					fillColor: "#0c82d1",
 					color: "#000",
 					weight: 1,
@@ -229,10 +235,10 @@
 					opacity: 1,
 					fillOpacity: 0.8
 				});
-				
 				}
 			}
 		}).addTo(map);
+
 
 	</script>
 
